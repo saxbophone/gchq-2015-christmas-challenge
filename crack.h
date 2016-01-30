@@ -22,3 +22,7 @@ bool set_valid(key k[9], set s[25]);
 
 // builds the first valid possibility for a set's key
 void build_set(key k[9], set s[25]);
+
+// builds the next set after a given set
+// (currently k is not used, and the resulting set may not be valid according to set_valid())
+void next_set(key k[9], set c[25], set n[25]);

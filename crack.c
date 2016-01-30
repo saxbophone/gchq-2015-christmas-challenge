@@ -87,3 +87,34 @@ void build_set(key k[9], set s[25]) {
         m++;
     }
 }
+
+// converts a 25-item set to a 25-bit int (32-bit really)
+uint32_t set_to_int(set in[25]) {
+    uint32_t out = 0;
+    for(uint8_t i = 0; i < 25; i++) {
+        out |= (in[i] << i);
+    }
+    return out;
+}
+
+// converts a 25-bit int (32-bit really) to a 25-item set
+void int_to_set(uint32_t in, set out[25]) {
+    for(uint8_t i = 0; i < 25; i++) {
+        out[i] = ((in & (1 << i)) >> i);
+    }
+}
+
+// builds the next set after a given set
+// (currently k is not used, and the resulting set may not be valid according to set_valid())
+void next_set(key k[9], set c[25], set n[25]) {
+    // NOTE: The current implementation is lazy:
+    // Treat the array as a 25-bit number and increment it
+    // This should be changed at some point for efficiency
+
+    // 32-bit int to store our *25-bit* int
+    uint32_t number = set_to_int(c);
+    // increment number by 1
+    number++;
+    // convert back to set
+    int_to_set(number, n);
+}

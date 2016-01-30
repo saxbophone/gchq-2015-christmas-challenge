@@ -39,6 +39,24 @@ bool test_build_set_is_valid() {
     return set_valid(k, s);
 }
 
+bool test_next_set() {
+    // test that next_set() can iterate a set
+    key k[9] = {}; // dummy for now
+    set c[25] = { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0 };
+    // expected result set
+    set e[25] = { 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0 };
+    set n[25] = {};
+    // call next_set
+    next_set(k, c, n);
+    // check if equal to expected set
+    for(uint8_t i = 0; i < 25; i++) {
+        if(n[i] != e[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 int main(int argc, char const *argv[]) {
     int result = 0;
     if(!test_set_valid()) {
@@ -51,6 +69,10 @@ int main(int argc, char const *argv[]) {
     }
     if(!test_build_set_is_valid()) {
         printf("FAIL: test_build_set_is_valid\n");
+        result = 1;
+    }
+    if(!test_next_set()) {
+        printf("FAIL: test_next_set\n");
         result = 1;
     }
     return result;
