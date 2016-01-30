@@ -30,5 +30,11 @@ void next_set(key k[9], set c[25], set n[25]);
 // converts a row of the grid to a set and retrieves the key for that row
 void row_to_set(grid g, uint8_t row_index, set s[25], key k[9]);
 
+// converts a set to a given row in the grid
+void set_to_row(grid * g, uint8_t row_index, set s[25]);
+
 // converts a column of the grid to a set and retrieves the key for that column
 void col_to_set(grid g, uint8_t col_index, set s[25], key k[9]);
+
+// converts a set to a given col in the grid
+void set_to_col(grid * g, uint8_t col_index, set s[25]);

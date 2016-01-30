@@ -170,6 +170,21 @@ bool test_row_to_set() {
     return true;
 }
 
+bool test_set_to_row() {
+    // test that set_to_row() converts a set to a row properly
+    grid g = {};
+    set s[25] = { 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1 };;
+    // call set_to_row
+    set_to_row(&g, 19, s);
+    // check if equal to expected row
+    for(uint8_t i = 0; i < 25; i++) {
+        if(g.squares[19][i] != s[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool test_col_to_set() {
     // test that col_to_set() converts a column to a set properly
     grid g = setup_grid_for_tests();
@@ -190,6 +205,21 @@ bool test_col_to_set() {
     // check if equal to expected set
     for(uint8_t i = 0; i < 25; i++) {
         if(s[i] != es[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool test_set_to_col() {
+    // test that set_to_col() converts a set to a column properly
+    grid g = {};
+    set s[25] = { 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1 };;
+    // call set_to_row
+    set_to_col(&g, 3, s);
+    // check if equal to expected row
+    for(uint8_t i = 0; i < 25; i++) {
+        if(g.squares[i][3] != s[i]) {
             return false;
         }
     }
@@ -218,8 +248,16 @@ int main(int argc, char const *argv[]) {
         printf("FAIL: test_row_to_set\n");
         result = 1;
     }
+    if(!test_set_to_row()) {
+        printf("FAIL: test_set_to_row\n");
+        result = 1;
+    }
     if(!test_col_to_set()) {
         printf("FAIL: test_col_to_set\n");
+        result = 1;
+    }
+    if(!test_set_to_col()) {
+        printf("FAIL: test_set_to_col\n");
         result = 1;
     }
     return result;
