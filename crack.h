@@ -19,3 +19,6 @@ typedef struct {
 
 // given a key array and a set, check if the set is valid according to the key array
 bool set_valid(key k[9], set s[25]);
+
+// builds the first valid possibility for a set's key
+void build_set(key k[9], set s[25]);
