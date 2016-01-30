@@ -4,106 +4,73 @@
 #include "crack.h"
 
 
-// evaluates if a grid object is correct, if this returns true then we've WON!
-bool check_grid(grid check) {
-    // check rows, break on first error
-    for(uint8_t ry = 0; ry < 25; ry++) {
-        bool looking = false; // if we're currently looking or not
-        uint8_t current = 0; // current box in key for this row
-        uint8_t count = 0; // current count of consecutive black boxes
-        uint8_t total_count = 0; // total count of black squares
-        uint8_t expected_total = 0;
-        for(uint8_t i = 0; i < 9; i++) {
-            expected_total += check.x_keys[ry][i];
-        }
-        for(uint8_t rx = 0; rx < 25; rx++) {
-            if(check.boxes[ry][rx] == 1) {
-                // it's not a zero (not white)
-                looking = true;
-                count++;
-                total_count++;
-                if(count == check.x_keys[ry][current]) {
-                    // we found the right number of consecutive squares!
-                    // reset count
-                    count = 0;
-                    // increment counter
-                    current++;
-                    // no longer looking
-                    looking = false;
-                }
-            } else if(looking == true) {
-                // wah wah! we ran out of black squares
-                // fail!
-                return false;
-            }
-        }
-        // if total count != expected total then it's incorrect
-        if(total_count != expected_total) {
-            return false;
+uint8_t count_non_zero(uint8_t array[], uint8_t len) {
+    // count the number of non-zero elements in an array and return it
+    uint8_t count = 0;
+    for(uint8_t i = 0; i < len; i++) {
+        if(array[i]) {
+            count++;
         }
     }
-    // if all were correct up to now then check columns
-    for(uint8_t cx = 0; cx < 25; cx++) {
-        bool looking = false; // if we're currently looking or not
-        uint8_t current = 0; // current box in key for this row
-        uint8_t count = 0; // current count of consecutive black boxes
-        uint8_t total_count = 0; // total count of black squares
-        uint8_t expected_total = 0;
-        for(uint8_t i = 0; i < 9; i++) {
-            expected_total += check.y_keys[cx][i];
-        }
-        for(uint8_t cy = 0; cy < 25; cy++) {
-            if(check.boxes[cy][cx] == 1) {
-                // it's not a zero (not white)
-                looking = true;
-                count++;
-                total_count++;
-                if(count == check.y_keys[cx][current]) {
-                    // we found the right number of consecutive squares!
-                    // reset count
-                    count = 0;
-                    // increment counter
-                    current++;
-                    // no longer looking
-                    looking = false;
-                }
-            } else if(looking == true) {
-                // wah wah! we ran out of black squares
-                // fail!
-                return false;
-            }
-        }
-        // if total count != expected total then it's incorrect
-        if(total_count != expected_total) {
-            return false;
-        }
-    }
-    return true;
+    return count;
 }
 
-// modifies grid by one iteration (converts rows to 25-bit ints and adds 1)
-grid iterate_grid(grid in) {
-    // convert each row to a 32-bit int
-    uint32_t rows[25] = {};
-    for(uint8_t y = 0; y < 25; y++) {
-        rows[y] = 0;
-        for(uint8_t x = 0; x < 25; x++) {
-            rows[y] |= (in.boxes[y][x] << x);
+uint8_t sum_array(uint8_t array[], uint8_t len) {
+    // returns sum of all items in an array
+    uint8_t sum = 0;
+    for(uint8_t i = 0; i < len; i++) {
+        sum += array[i];
+    }
+    return sum;
+}
+
+void build_key(uint8_t array[], uint8_t len, uint8_t result[], uint8_t result_len) {
+    // reconstruct a key of a given set, counting the consecutive runs of black squares (non-zero)
+    // first, find the index of the first non-zero item
+    uint8_t start = 0;
+    while(!(array[start]) && start < len) {
+        start++;
+    }
+    // now count consecutive runs and store in result array
+    uint8_t result_counter = 0; // points to curent slot in the key
+    for(uint8_t i = start; i < len; i++) {
+        if(result_counter > result_len-1) {
+            // in case result counter goes out of bounds
+            return;
+        }
+        if(array[i]) {
+            result[result_counter]++;
+        } else if(result[result_counter]) {
+            // move on to next result key
+            result_counter++;
         }
     }
-    // add 1 to the first row. if it overflows, carry to next
-    for(uint8_t y = 0; y < 25; y++) {
-        rows[y] = ((rows[y] + 1) % 33554432); // 33554432 = 2 ^ 25
-        if(rows[y] != 0) {
-            // if it didn't overflow, then break
-            break;
+}
+
+// given a key array and a set, check if the set is valid according to the key array
+bool set_valid(key k[9], set s[25]) {
+    // first get the number of non-zero items in the key
+    uint8_t key_len = count_non_zero(k, 9);
+    // get the total of the items in the key
+    uint8_t key_sum = sum_array(k, 9);
+    // do the same for the set
+    uint8_t set_sum = sum_array(s, 25);
+    // if the sums aren't equal then we know already it's not valid
+    if(key_sum != set_sum) {
+        return false;
+    } else {
+        // if they were equal, it's possibly valid, but we need to do more checks
+        // construct the key for this set
+        uint8_t rebuilt_key[9] = {};
+        build_key(s, 25, rebuilt_key, 9);
+        // compare it with the target key
+        for(uint8_t i = 0; i < 9; i++) {
+            if(k[i] != rebuilt_key[i]) {
+                // if any are not equal, return false
+                return false;
+            }
         }
     }
-    // convert each back to a row of squares
-    for(uint8_t y = 0; y < 25; y++) {
-        for(uint8_t x = 0; x < 25; x++) {
-            in.boxes[y][x] = ((rows[y] & (1 << x)) >> x);
-        }
-    }
-    return in;
+    // if we got here then it's correct!
+    return true;
 }

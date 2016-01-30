@@ -1,15 +1,21 @@
+#include <stdbool.h>
 #include <stdint.h>
 
 
+// a key is a number specifying a consecutive number of black squares in a row/col
+typedef uint8_t key;
+// a square is one shaded or unshaded box in the grid, inside a row or column
+typedef uint8_t square;
+// a set is a row/col unpacked into a 25-item array for ease of use
+typedef uint8_t set;
+
+// main struct to represent state of the grid of evil
 typedef struct {
-    uint8_t boxes[25][25];
-    // there are 25 keys for each axis, each could have up to 9 items in it
-    uint8_t x_keys[25][9];
-    uint8_t y_keys[25][9];
+    // 25 rows/cols, each having a max of 9 items
+    key row_keys[25][9];
+    key col_keys[25][9];
+    square squares[25][25]; // 25 x 25 squares
 } grid;
 
-// evaluates if a grid object is correct, if this returns true then we've WON!
-bool check_grid(grid check);
-
-// modifies grid by one iteration (converts rows to 25-bit ints and adds 1)
-grid iterate_grid(grid in);
+// given a key array and a set, check if the set is valid according to the key array
+bool set_valid(key k[9], set s[25]);
