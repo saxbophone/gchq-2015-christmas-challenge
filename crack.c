@@ -76,7 +76,7 @@ bool set_valid(key k[9], set s[25]) {
 }
 
 // builds the first valid possibility for a set's key
-void build_set(key k[9], set s[]) {
+void build_set(key k[9], set s[25]) {
     uint8_t m = 0;
     for(uint8_t i = 0; i < 9; i++) {
         for(uint8_t j = 0; j < k[i]; j++) {
