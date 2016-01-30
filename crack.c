@@ -106,7 +106,8 @@ void int_to_set(uint32_t in, set out[25]) {
 
 // builds the next set after a given set
 // (currently k is not used, and the resulting set may not be valid according to set_valid())
-void next_set(key k[9], set c[25], set n[25]) {
+// returns the next set as a 25-bit (32-bit really) int (also stores in param n)
+uint32_t next_set(key k[9], set c[25], set n[25]) {
     // NOTE: The current implementation is lazy:
     // Treat the array as a 25-bit number and increment it
     // This should be changed at some point for efficiency
@@ -117,6 +118,7 @@ void next_set(key k[9], set c[25], set n[25]) {
     number++;
     // convert back to set
     int_to_set(number, n);
+    return number;
 }
 
 // converts a row of the grid to a set and retrieves the key for that row
