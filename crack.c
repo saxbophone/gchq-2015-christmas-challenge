@@ -7,16 +7,16 @@
 // evaluates if a grid object is correct, if this returns true then we've WON!
 bool check_grid(grid check) {
     // check rows, break on first error
-    for(uint8_t ry; ry < 25; ry++) {
+    for(uint8_t ry = 0; ry < 25; ry++) {
         bool looking = false; // if we're currently looking or not
         uint8_t current = 0; // current box in key for this row
         uint8_t count = 0; // current count of consecutive black boxes
         uint8_t total_count = 0; // total count of black squares
         uint8_t expected_total = 0;
-        for(uint8_t i; i < 9; i++) {
+        for(uint8_t i = 0; i < 9; i++) {
             expected_total += check.x_keys[ry][i];
         }
-        for(uint8_t rx; rx < 25; rx++) {
+        for(uint8_t rx = 0; rx < 25; rx++) {
             if(check.boxes[ry][rx] == 1) {
                 // it's not a zero (not white)
                 looking = true;
@@ -43,16 +43,16 @@ bool check_grid(grid check) {
         }
     }
     // if all were correct up to now then check columns
-    for(uint8_t cx; cx < 25; cx++) {
+    for(uint8_t cx = 0; cx < 25; cx++) {
         bool looking = false; // if we're currently looking or not
         uint8_t current = 0; // current box in key for this row
         uint8_t count = 0; // current count of consecutive black boxes
         uint8_t total_count = 0; // total count of black squares
         uint8_t expected_total = 0;
-        for(uint8_t i; i < 9; i++) {
+        for(uint8_t i = 0; i < 9; i++) {
             expected_total += check.y_keys[cx][i];
         }
-        for(uint8_t cy; cy < 25; cy++) {
+        for(uint8_t cy = 0; cy < 25; cy++) {
             if(check.boxes[cy][cx] == 1) {
                 // it's not a zero (not white)
                 looking = true;
