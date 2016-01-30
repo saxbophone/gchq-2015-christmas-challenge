@@ -26,3 +26,9 @@ void build_set(key k[9], set s[25]);
 // builds the next set after a given set
 // (currently k is not used, and the resulting set may not be valid according to set_valid())
 void next_set(key k[9], set c[25], set n[25]);
+
+// converts a row of the grid to a set and retrieves the key for that row
+void row_to_set(grid g, uint8_t row_index, set s[25], key k[9]);
+
+// converts a column of the grid to a set and retrieves the key for that column
+void col_to_set(grid g, uint8_t col_index, set s[25], key k[9]);

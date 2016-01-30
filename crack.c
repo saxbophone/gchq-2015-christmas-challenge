@@ -118,3 +118,27 @@ void next_set(key k[9], set c[25], set n[25]) {
     // convert back to set
     int_to_set(number, n);
 }
+
+// converts a row of the grid to a set and retrieves the key for that row
+void row_to_set(grid g, uint8_t row_index, set s[25], key k[9]) {
+    // copy across the keys
+    for(uint8_t i = 0; i < 9; i++) {
+        k[i] = g.row_keys[row_index][i];
+    }
+    // copy across the set
+    for(uint8_t i = 0; i < 25; i++) {
+        s[i] = g.squares[row_index][i];
+    }
+}
+
+// converts a column of the grid to a set and retrieves the key for that column
+void col_to_set(grid g, uint8_t col_index, set s[25], key k[9]) {
+    // copy across the keys
+    for(uint8_t i = 0; i < 9; i++) {
+        k[i] = g.col_keys[col_index][i];
+    }
+    // copy across the set
+    for(uint8_t i = 0; i < 25; i++) {
+        s[i] = g.squares[i][col_index];
+    }
+}
