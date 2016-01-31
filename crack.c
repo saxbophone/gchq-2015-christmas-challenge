@@ -211,24 +211,21 @@ set_combos find_valid_sets(key k, set s) {
     return results;
 }
 
-// // finds all the valid combinations for all the rows and columns in a given grid
-// grid_combos find_valid_combos(grid g) {
-//     // initialise grid_combos object used to store results
-//     grid_combos results = {};
-//     // fill in results of rows and cols
-//     for(uint8_t i = 0; i < 25; i++) {
-//         // do row first
-//         set row_set[25] = {};
-//         key row_key[9] = {};
-//         row_to_set(g, i, row_set, row_key);
-//         results.rows[i] = find_valid_sets(row_key, row_set);
-//         // now do column
-//         set col_set[25] = {};
-//         key col_key[9] = {};
-//         col_to_set(g, i, col_set, col_key);
-//         results.cols[i] = find_valid_sets(row_key, row_set);
-//     }
-// }
+// finds all the valid combinations for all the rows and columns in a given grid
+grid_combos find_valid_combos(grid g) {
+    // initialise grid_combos object used to store results
+    grid_combos results = {};
+    // fill in results of rows and cols
+    for(uint8_t i = 0; i < 25; i++) {
+        // do row first
+        key_set r = row_to_set(g, i);
+        results.rows[i] = find_valid_sets(r.k, r.s);
+        // now do column
+        key_set c = col_to_set(g, i);
+        results.cols[i] = find_valid_sets(c.k, c.s);
+    }
+    return results;
+}
 
 // frees dynamically allocated memory contained within the rows and cols of a given grid_combos struct
 void free_grid_combos(grid_combos g) {
