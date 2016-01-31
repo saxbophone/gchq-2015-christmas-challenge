@@ -1,3 +1,8 @@
+"""
+Simple Python script that reads in 25 rows of space-separated numbers from the
+command line and outputs these as a C struct initialiser for use in puzzle.inc.
+"""
+
 lines = []
 
 for _ in range(25):
