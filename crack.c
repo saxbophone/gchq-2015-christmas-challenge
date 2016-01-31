@@ -26,48 +26,50 @@ uint8_t sum_array(uint8_t array[], uint8_t len) {
     return sum;
 }
 
-void build_key(uint8_t array[], uint8_t len, uint8_t result[], uint8_t result_len) {
+key build_key(set s) {
     // reconstruct a key of a given set, counting the consecutive runs of black squares (non-zero)
     // first, find the index of the first non-zero item
+    // initialise blank key to return
+    key k = {};
     uint8_t start = 0;
-    while(!(array[start]) && start < len) {
+    while(!(s.items[start]) && start < 25) {
         start++;
     }
     // now count consecutive runs and store in result array
     uint8_t result_counter = 0; // points to curent slot in the key
-    for(uint8_t i = start; i < len; i++) {
-        if(result_counter > result_len-1) {
+    for(uint8_t i = start; i < 25; i++) {
+        if(result_counter > 9-1) {
             // in case result counter goes out of bounds
-            return;
+            return k;
         }
-        if(array[i]) {
-            result[result_counter]++;
-        } else if(result[result_counter]) {
+        if(s.items[i]) {
+            k.items[result_counter]++;
+        } else if(k.items[result_counter]) {
             // move on to next result key
             result_counter++;
         }
     }
+    return k;
 }
 
 // given a key array and a set, check if the set is valid according to the key array
-bool set_valid(key k[9], set s[25]) {
+bool set_valid(key k, set s) {
     // first get the number of non-zero items in the key
-    uint8_t key_len = count_non_zero(k, 9);
+    uint8_t key_len = count_non_zero(k.items, 9);
     // get the total of the items in the key
-    uint8_t key_sum = sum_array(k, 9);
+    uint8_t key_sum = sum_array(k.items, 9);
     // do the same for the set
-    uint8_t set_sum = sum_array(s, 25);
+    uint8_t set_sum = sum_array(s.items, 25);
     // if the sums aren't equal then we know already it's not valid
     if(key_sum != set_sum) {
         return false;
     } else {
         // if they were equal, it's possibly valid, but we need to do more checks
         // construct the key for this set
-        uint8_t rebuilt_key[9] = {};
-        build_key(s, 25, rebuilt_key, 9);
+        key rebuilt_key = build_key(s);
         // compare it with the target key
         for(uint8_t i = 0; i < 9; i++) {
-            if(k[i] != rebuilt_key[i]) {
+            if(k.items[i] != rebuilt_key.items[i]) {
                 // if any are not equal, return false
                 return false;
             }
@@ -78,82 +80,88 @@ bool set_valid(key k[9], set s[25]) {
 }
 
 // converts a 25-item set to a 25-bit int (32-bit really)
-packed_set set_to_int(set in[25]) {
+packed_set set_to_int(set s) {
     packed_set out = 0;
     for(uint8_t i = 0; i < 25; i++) {
-        out |= (in[i] << i);
+        out |= (s.items[i] << i);
     }
     return out;
 }
 
 // converts a 25-bit int (32-bit really) to a 25-item set
-void int_to_set(packed_set in, set out[25]) {
+set int_to_set(packed_set p) {
+    set s = {};
     for(uint8_t i = 0; i < 25; i++) {
-        out[i] = ((in & (1 << i)) >> i);
+        s.items[i] = ((p & (1 << i)) >> i);
     }
+    return s;
 }
 
 // builds the next set after a given set
 // (currently k is not used, and the resulting set may not be valid according to set_valid())
 // returns the next set as a 25-bit (32-bit really) int (also stores in param n)
-packed_set next_set(key k[9], set c[25], set n[25]) {
+key_set next_set(key k, set c) {
     // NOTE: The current implementation is lazy:
     // Treat the array as a 25-bit number and increment it
     // This should be changed at some point for efficiency
-
+    key_set result = {};
     // 32-bit int to store our *25-bit* int
-    packed_set number = set_to_int(c);
+    result.p = set_to_int(c);
     // increment number by 1
-    number++;
+    result.p++;
     // convert back to set
-    int_to_set(number, n);
-    return number;
+    result.s = int_to_set(result.p);
+    return result;
 }
 
 // converts a row of the grid to a set and retrieves the key for that row
-void row_to_set(grid g, uint8_t row_index, set s[25], key k[9]) {
+key_set row_to_set(grid g, uint8_t row_index) {
+    key_set result = {};
     // copy across the keys
     for(uint8_t i = 0; i < 9; i++) {
-        k[i] = g.row_keys[row_index][i];
+        result.k.items[i] = g.row_keys[row_index].items[i];
     }
     // copy across the set
     for(uint8_t i = 0; i < 25; i++) {
-        s[i] = g.squares[row_index][i];
+        result.s.items[i] = g.squares[row_index][i];
     }
-}
-
-// converts a set to a given row in the grid
-void set_to_row(grid * g, uint8_t row_index, set s[25]) {
-    // copy across the set
-    for(uint8_t i = 0; i < 25; i++) {
-        g->squares[row_index][i] = s[i];
-    }
+    return result;
 }
 
 // converts a column of the grid to a set and retrieves the key for that column
-void col_to_set(grid g, uint8_t col_index, set s[25], key k[9]) {
+key_set col_to_set(grid g, uint8_t col_index) {
+    key_set result = {};
     // copy across the keys
     for(uint8_t i = 0; i < 9; i++) {
-        k[i] = g.col_keys[col_index][i];
+        result.k.items[i] = g.col_keys[col_index].items[i];
     }
     // copy across the set
     for(uint8_t i = 0; i < 25; i++) {
-        s[i] = g.squares[i][col_index];
+        result.s.items[i] = g.squares[i][col_index];
+    }
+    return result;
+}
+
+// converts a set to a given row in the grid
+void set_to_row(grid * g, uint8_t row_index, set s) {
+    // copy across the set
+    for(uint8_t i = 0; i < 25; i++) {
+        g->squares[row_index][i] = s.items[i];
     }
 }
 
 // converts a set to a given col in the grid
-void set_to_col(grid * g, uint8_t col_index, set s[25]) {
+void set_to_col(grid * g, uint8_t col_index, set s) {
     // copy across the set
     for(uint8_t i = 0; i < 25; i++) {
-        g->squares[i][col_index] = s[i];
+        g->squares[i][col_index] = s.items[i];
     }
 }
 
 // finds all the valid combinations for a given set and stores these and their
 // count in a set_combos struct (reallocates the struct as needed)
 // PLEASE REMEMBER TO free() MEMORY ALLOCATED BY THIS FUNCTION!
-set_combos find_valid_sets(key k[9], set s[25]) {
+set_combos find_valid_sets(key k, set s) {
     // initialise our dynamic array counter - this keeps track of how much we have allocated
     int64_t allocated = 1024;
     set_combos results = {
@@ -172,7 +180,8 @@ set_combos find_valid_sets(key k[9], set s[25]) {
     }
     // now iterate the set and store any newly found patterns, re-allocating as needed
     for(uint64_t i = 0; i < 33554432; i++) {
-        packed_set latest = next_set(k, s, s);
+        key_set latest = next_set(k, s);
+        s = latest.s;
         if(set_valid(k, s)) {
             // re-allocate dynamic memory if we need to
             if(results.count == allocated) {
@@ -187,7 +196,7 @@ set_combos find_valid_sets(key k[9], set s[25]) {
                 }
             }
             // store latest valid result as a 32-bit int
-            results.sets[results.count] = latest;
+            results.sets[results.count] = latest.p;
             // increment found counter
             results.count++;
         }

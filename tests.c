@@ -7,30 +7,31 @@
 
 
 bool test_set_valid() {
-    key tk[9] = { 1, 7, 3, 1, 1, 2, 0, 0, 0 };
-    set ts[25] = { 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0 };
+    key tk = { { 1, 7, 3, 1, 1, 2, 0, 0, 0 } };
+    set ts = { { 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0 } };
     bool should_be_true = set_valid(tk, ts);
-    key fk[9] = { 1, 7, 3, 1, 1, 2, 0, 0, 0 };
-    set fs[25] = { 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0 };
+    key fk = { { 1, 7, 3, 1, 1, 2, 0, 0, 0 } };
+    set fs = { { 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0 } };
     bool should_be_false = set_valid(fk, fs);
     return (should_be_true && !should_be_false);
 }
 
 bool test_next_set() {
     // test that next_set() can iterate a set
-    key k[9] = {}; // dummy for now
-    set c[25] = { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0 };
+    key k = {}; // dummy for now
+    set c = { { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0 } };
     // expected result set
-    set e[25] = { 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0 };
-    set n[25] = {};
+    set e = { { 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0 } };
     // call next_set
-    next_set(k, c, n);
+    key_set result = next_set(k, c);
     // check if equal to expected set
     for(uint8_t i = 0; i < 25; i++) {
-        if(n[i] != e[i]) {
+        // printf("%d %d\n", result.s.items[i], e.items[i]);
+        if(result.s.items[i] != e.items[i]) {
             return false;
         }
     }
+    // printf("\n");
     return true;
 }
 
@@ -124,38 +125,21 @@ grid setup_grid_for_tests() {
 bool test_row_to_set() {
     // test that row_to_set() converts a row to a set properly
     grid g = setup_grid_for_tests();
-    key k[9] = {};
-    set s[25] = {};
     // the expected key
-    key ek[9] = { 1, 3, 2, 5, 4, 0, 0, 0, 0 };
+    key ek = { { 1, 3, 2, 5, 4, 0, 0, 0, 0 } };
     // the expected set
-    set es[25] = { 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1 };
+    set es = { { 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1 } };
     // call row_to_set
-    row_to_set(g, 7, s, k);
+    key_set result = row_to_set(g, 7);
     // check if equal to expected key
     for(uint8_t i = 0; i < 9; i++) {
-        if(k[i] != ek[i]) {
+        if(result.k.items[i] != ek.items[i]) {
             return false;
         }
     }
     // check if equal to expected set
     for(uint8_t i = 0; i < 25; i++) {
-        if(s[i] != es[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool test_set_to_row() {
-    // test that set_to_row() converts a set to a row properly
-    grid g = {};
-    set s[25] = { 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1 };;
-    // call set_to_row
-    set_to_row(&g, 19, s);
-    // check if equal to expected row
-    for(uint8_t i = 0; i < 25; i++) {
-        if(g.squares[19][i] != s[i]) {
+        if(result.s.items[i] != es.items[i]) {
             return false;
         }
     }
@@ -165,23 +149,36 @@ bool test_set_to_row() {
 bool test_col_to_set() {
     // test that col_to_set() converts a column to a set properly
     grid g = setup_grid_for_tests();
-    key k[9] = {};
-    set s[25] = {};
     // the expected key
-    key ek[9] = { 5, 3, 2, 1, 3, 1, 2, 0, 0 };
+    key ek = { { 5, 3, 2, 1, 3, 1, 2, 0, 0 } };
     // the expected set
-    set es[25] = { 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1 };
+    set es = { { 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1 } };
     // call col_to_set
-    col_to_set(g, 14, s, k);
+    key_set result = col_to_set(g, 14);
     // check if equal to expected key
     for(uint8_t i = 0; i < 9; i++) {
-        if(k[i] != ek[i]) {
+        if(result.k.items[i] != ek.items[i]) {
             return false;
         }
     }
     // check if equal to expected set
     for(uint8_t i = 0; i < 25; i++) {
-        if(s[i] != es[i]) {
+        if(result.s.items[i] != es.items[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool test_set_to_row() {
+    // test that set_to_row() converts a set to a row properly
+    grid g = {};
+    set s = { { 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1 } };
+    // call set_to_row
+    set_to_row(&g, 19, s);
+    // check if equal to expected row
+    for(uint8_t i = 0; i < 25; i++) {
+        if(g.squares[19][i] != s.items[i]) {
             return false;
         }
     }
@@ -191,12 +188,12 @@ bool test_col_to_set() {
 bool test_set_to_col() {
     // test that set_to_col() converts a set to a column properly
     grid g = {};
-    set s[25] = { 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1 };;
+    set s = { { 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1 } };
     // call set_to_row
     set_to_col(&g, 3, s);
     // check if equal to expected row
     for(uint8_t i = 0; i < 25; i++) {
-        if(g.squares[i][3] != s[i]) {
+        if(g.squares[i][3] != s.items[i]) {
             return false;
         }
     }
@@ -205,8 +202,8 @@ bool test_set_to_col() {
 
 bool test_find_valid_sets() {
     // test that find_valid_sets() returns the correct number of valid sets for a given key
-    key k[9] = { 7, 3, 1, 1, 7, 0, 0, 0, 0 };
-    set s[25] = {};
+    key k = { { 7, 3, 1, 1, 7, 0, 0, 0, 0 } };
+    set s = {};
     // expected patterns that will be found
     uint32_t expected[21] = {
         8345471,  16668543, 16684927, 16689023, 16690815, 16690942, 33314687,
@@ -233,8 +230,8 @@ bool test_find_valid_sets() {
 bool test_find_valid_sets_realloc() {
     // test that find_valid_sets() returns the correct number of valid sets for a given key,
     // and that it reallocates plenty memory (this known set generates in excess of 20k results)
-    key k[9] = { 1, 1, 1, 2, 1, 1, 0, 0, 0 };
-    set s[25] = {};
+    key k = { { 1, 1, 1, 2, 1, 1, 0, 0, 0 } };
+    set s = {};
     // call find_valid_sets and store results in a set_combos struct
     set_combos results = find_valid_sets(k, s);
     // check the expected number of valid patterns were found
@@ -261,20 +258,6 @@ int main(int argc, char const *argv[]) {
     } else {
         printf("PASS\n");
     }
-    // printf("test_build_set:\n");
-    // if(!test_build_set()) {
-    //     printf("FAIL\n");
-    //     result = 1;
-    // } else {
-    //     printf("PASS\n");
-    // }
-    // printf("test_build_set_is_valid:\n");
-    // if(!test_build_set_is_valid()) {
-    //     printf("FAIL\n");
-    //     result = 1;
-    // } else {
-    //     printf("PASS\n");
-    // }
     printf("test_next_set:\n");
     if(!test_next_set()) {
         printf("FAIL\n");
