@@ -214,3 +214,23 @@ set_combos find_valid_sets(key k[9], set s[25]) {
     }
     return results;
 }
+
+// finds all the valid combinations for all the rows and columns in a given grid
+grid_combos find_valid_combos(grid g) {
+    // 
+}
+
+// frees dynamically allocated memory contained within the rows and cols of a given grid_combos struct
+void free_grid_combos(grid_combos g) {
+    // free all rows and cols at same time
+    for(uint8_t i = 0; i < 25; i++) {
+        if(g.rows[i].sets != NULL) {
+            free(g.rows[i].sets);
+            g.rows[i].sets = NULL;
+        }
+        if(g.cols[i].sets != NULL) {
+            free(g.cols[i].sets);
+            g.cols[i].sets = NULL;
+        }
+    }
+}

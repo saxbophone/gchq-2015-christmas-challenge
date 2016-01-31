@@ -270,6 +270,12 @@ bool test_find_valid_sets_realloc() {
     return true;
 }
 
+bool test_free_grid_combos() {
+    grid_combos g = {};
+    free_grid_combos(g);
+    return true;
+}
+
 int main(int argc, char const *argv[]) {
     int result = 0;
     printf("test_set_valid:\n");
@@ -337,6 +343,13 @@ int main(int argc, char const *argv[]) {
     }
     printf("test_find_valid_sets_realloc:\n");
     if(!test_find_valid_sets_realloc()) {
+        printf("FAIL\n");
+        result = 1;
+    } else {
+        printf("PASS\n");
+    }
+    printf("test_free_grid_combos:\n");
+    if(!test_free_grid_combos()) {
         printf("FAIL\n");
         result = 1;
     } else {

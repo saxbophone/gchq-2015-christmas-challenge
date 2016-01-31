@@ -63,3 +63,6 @@ set_combos find_valid_sets(key k[9], set s[25]);
 
 // finds all the valid combinations for all the rows and columns in a given grid
 grid_combos find_valid_combos(grid g);
+
+// frees dynamically allocated memory contained within the rows and cols of a given grid_combos struct
+void free_grid_combos(grid_combos g);
