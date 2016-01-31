@@ -39,3 +39,8 @@ void col_to_set(grid g, uint8_t col_index, set s[25], key k[9]);
 
 // converts a set to a given col in the grid
 void set_to_col(grid * g, uint8_t col_index, set s[25]);
+
+// finds all the valid combinations for a given set, stores these in the given array
+// (reallocates if needed) and returns the number of valid combinations
+// PLEASE REMEMBER TO free() MEMORY ALLOCATED BY THIS FUNCTION!
+int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid);

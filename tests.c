@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "crack.h"
 
@@ -226,6 +227,35 @@ bool test_set_to_col() {
     return true;
 }
 
+bool test_find_valid_sets() {
+    // test that find_valid_sets() returns the correct number of valid sets for a given key
+    key k[9] = { 7, 3, 1, 1, 7, 0, 0, 0, 0 };
+    set s[25] = {};
+    // expected patterns that will be found
+    uint32_t expected[21] = {
+        0,         8345471, 16668543, 16684927, 16689023, 16690815, 16690942,
+        33314687, 33331071, 33335167, 33336959, 33337086, 33363839, 33367935,
+        33369727, 33369854, 33376127, 33377919, 33378046, 33381503, 33381630,
+    };
+    // pointer that will have valid patterns allocated to it
+    uint32_t * valid = (uint32_t *)realloc(valid, 1 * sizeof(uint32_t));
+    // call find_valid_sets and store count of number found
+    uint64_t found = find_valid_sets(k, s, valid);
+    // check the expected number of valid patterns were found
+    if(found != 21) {
+        return false;
+    }
+    // check the patterns found were expected
+    for(uint8_t i = 0; i < 21; i++) {
+        if((uint32_t)valid[i] != expected[i]) {
+            return false;
+        }
+    }
+    // DONT FORGET TO FREE DYNAMIC MEMORY!
+    free(valid);
+    return true;
+}
+
 int main(int argc, char const *argv[]) {
     int result = 0;
     if(!test_set_valid()) {
@@ -258,6 +288,10 @@ int main(int argc, char const *argv[]) {
     }
     if(!test_set_to_col()) {
         printf("FAIL: test_set_to_col\n");
+        result = 1;
+    }
+    if(!test_find_valid_sets()) {
+        printf("FAIL: test_find_valid_sets\n");
         result = 1;
     }
     return result;

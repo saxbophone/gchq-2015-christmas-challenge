@@ -1,5 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "crack.h"
 
@@ -159,4 +161,56 @@ void set_to_col(grid * g, uint8_t col_index, set s[25]) {
     for(uint8_t i = 0; i < 25; i++) {
         g->squares[i][col_index] = s[i];
     }
+}
+
+// finds all the valid combinations for a given set, stores these in the given array
+// (reallocates if needed) and returns the number of valid combinations
+// PLEASE REMEMBER TO free() MEMORY ALLOCATED BY THIS FUNCTION!
+int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
+    // initialise valid pattern counter
+    uint64_t found = 0;
+    // initialise our dynamic array counter - this keeps track of how much we have allocated
+    int64_t allocated = 32;
+    // allocate memory - store 32-bit uints (this is how we store valid results)
+    valid = (uint32_t *)realloc(valid, allocated * sizeof(uint32_t));
+    // if calloc failed, return -1
+    if(valid == NULL) {
+        fprintf(stderr, "Failed to allocate memory.\n");
+        return -1;
+    }
+    if(set_valid(k, s)) {
+        // if this first set was valid, then increment counter and store 32-bit int in valid array
+        found++;
+        valid[found] = set_to_int(s);
+    }
+    // now iterate the set and store any newly found patterns, re-allocating as needed
+    for(uint64_t i = 0; i < 33554432; i++) {
+        uint32_t latest = next_set(k, s, s);
+        if(set_valid(k, s)) {
+            // increment found counter
+            found++;
+            // re-allocate dynamic memory if we need to
+            if(found > allocated) {
+                // set next allocation size to current size + 32
+                allocated += 32;
+                // try and re-allocate memory
+                valid = (uint32_t *)realloc(valid, allocated * sizeof(uint32_t));
+                // if realloc failed, return -1
+                if(valid == NULL) {
+                    fprintf(stderr, "Failed to re-allocate memory.\n");
+                    return -1;
+                }
+            }
+            // store latest valid result as a 32-bit int
+            valid[found] = latest;
+        }
+    }
+    // finally, resize dynamic array to exactly the number of found items
+    valid = (uint32_t *)realloc(valid, allocated * sizeof(uint32_t));
+    // if realloc failed, return -1
+    if(valid == NULL) {
+        fprintf(stderr, "Failed to re-allocate memory.\n");
+        return -1;
+    }
+    return found;
 }
