@@ -163,54 +163,54 @@ void set_to_col(grid * g, uint8_t col_index, set s[25]) {
     }
 }
 
-// finds all the valid combinations for a given set, stores these in the given array
-// (reallocates if needed) and returns the number of valid combinations
+// finds all the valid combinations for a given set and stores these and their
+// count in a set_results struct (reallocates the struct as needed)
 // PLEASE REMEMBER TO free() MEMORY ALLOCATED BY THIS FUNCTION!
-int64_t find_valid_sets(key k[9], set s[25], packed_set * valid) {
-    // initialise valid pattern counter
-    uint64_t found = 0;
+set_results find_valid_sets(key k[9], set s[25]) {
     // initialise our dynamic array counter - this keeps track of how much we have allocated
     int64_t allocated = 1024;
-    // allocate memory - store 32-bit uints (this is how we store valid results)
-    valid = realloc(valid, allocated * sizeof(packed_set));
-    // if realloc failed, return -1
-    if(valid == NULL) {
+    set_results results = {
+        .sets = malloc(allocated * sizeof(packed_set)), // allocate memory
+        .count = 0, // initialise valid pattern counter
+    };
+    // if malloc failed, abort
+    if(results.sets == NULL) {
         fprintf(stderr, "Failed to allocate memory.\n");
-        return -1;
+        abort();
     }
     if(set_valid(k, s)) {
         // if this first set was valid, then increment counter and store 32-bit int in valid array
-        found++;
-        valid[found-1] = set_to_int(s);
+        results.count++;
+        results.sets[results.count-1] = set_to_int(s);
     }
     // now iterate the set and store any newly found patterns, re-allocating as needed
     for(uint64_t i = 0; i < 33554432; i++) {
         packed_set latest = next_set(k, s, s);
         if(set_valid(k, s)) {
             // increment found counter
-            found++;
+            results.count++;
             // re-allocate dynamic memory if we need to
-            if(found > allocated) {
+            if(results.count > allocated) {
                 // set next allocation size to current size + 1024
                 allocated += 1024;
                 // try and re-allocate memory
-                valid = realloc(valid, allocated * sizeof(packed_set));
-                // if realloc failed, return -1
-                if(valid == NULL) {
+                results.sets = realloc(results.sets, allocated * sizeof(packed_set));
+                // if realloc failed, abort
+                if(results.sets == NULL) {
                     fprintf(stderr, "Failed to re-allocate memory.\n");
-                    return -1;
+                    abort();
                 }
             }
             // store latest valid result as a 32-bit int
-            valid[found-1] = latest;
+            results.sets[results.count-1] = latest;
         }
     }
     // finally, resize dynamic array to exactly the number of found items
-    valid = realloc(valid, found * sizeof(packed_set));
-    // if realloc failed, return -1
-    if(valid == NULL) {
+    results.sets = realloc(results.sets, results.count * sizeof(packed_set));
+    // if realloc failed, abort
+    if(results.sets == NULL) {
         fprintf(stderr, "Failed to re-allocate memory.\n");
-        return -1;
+        abort();
     }
-    return found;
+    return results;
 }

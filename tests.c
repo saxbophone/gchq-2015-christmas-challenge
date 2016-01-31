@@ -237,22 +237,20 @@ bool test_find_valid_sets() {
         33331071, 33335167, 33336959, 33337086, 33363839, 33367935, 33369727,
         33369854, 33376127, 33377919, 33378046, 33381503, 33381630, 33381884,
     };
-    // pointer that will have valid patterns allocated to it
-    uint32_t * valid = calloc(1, sizeof(uint32_t));
-    // call find_valid_sets and store count of number found
-    uint64_t found = find_valid_sets(k, s, valid);
+    // call find_valid_sets and store results in a set_results struct
+    set_results results = find_valid_sets(k, s);
     // check the expected number of valid patterns were found
-    if(found != 21) {
+    if(results.count != 21) {
         return false;
     }
     // check the patterns found were expected
     for(uint8_t i = 0; i < 21; i++) {
-        if((uint32_t)valid[i] != expected[i]) {
+        if((uint32_t)results.sets[i] != expected[i]) {
             return false;
         }
     }
     // DONT FORGET TO FREE DYNAMIC MEMORY!
-    free(valid);
+    free(results.sets);
     return true;
 }
 
@@ -261,16 +259,14 @@ bool test_find_valid_sets_realloc() {
     // and that it reallocates plenty memory (this known set generates in excess of 20k results)
     key k[9] = { 1, 1, 1, 2, 1, 1, 0, 0, 0 };
     set s[25] = {};
-    // pointer that will have valid patterns allocated to it
-    uint32_t * valid = (uint32_t *)calloc(1, sizeof(uint32_t));
-    // call find_valid_sets and store count of number found
-    uint64_t found = find_valid_sets(k, s, valid);
+    // call find_valid_sets and store results in a set_results struct
+    set_results results = find_valid_sets(k, s);
     // check the expected number of valid patterns were found
-    if(found != 27132) {
+    if(results.count != 27132) {
         return false;
     }
     // DONT FORGET TO FREE DYNAMIC MEMORY!
-    free(valid);
+    free(results.sets);
     return true;
 }
 
