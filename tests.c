@@ -238,7 +238,7 @@ bool test_find_valid_sets() {
         33369854, 33376127, 33377919, 33378046, 33381503, 33381630, 33381884,
     };
     // pointer that will have valid patterns allocated to it
-    uint32_t * valid = (uint32_t *)calloc(1, sizeof(uint32_t));
+    uint32_t * valid = calloc(1, sizeof(uint32_t));
     // call find_valid_sets and store count of number found
     uint64_t found = find_valid_sets(k, s, valid);
     // check the expected number of valid patterns were found
@@ -258,7 +258,7 @@ bool test_find_valid_sets() {
 
 bool test_find_valid_sets_realloc() {
     // test that find_valid_sets() returns the correct number of valid sets for a given key,
-    // and that it reallocates plenty memory
+    // and that it reallocates plenty memory (this known set generates in excess of 20k results)
     key k[9] = { 1, 1, 1, 2, 1, 1, 0, 0, 0 };
     set s[25] = {};
     // pointer that will have valid patterns allocated to it
