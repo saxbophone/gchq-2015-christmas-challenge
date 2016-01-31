@@ -238,7 +238,7 @@ bool test_find_valid_sets() {
         33369727, 33369854, 33376127, 33377919, 33378046, 33381503, 33381630,
     };
     // pointer that will have valid patterns allocated to it
-    uint32_t * valid = (uint32_t *)realloc(valid, 1 * sizeof(uint32_t));
+    uint32_t * valid = (uint32_t *)calloc(1, sizeof(uint32_t));
     // call find_valid_sets and store count of number found
     uint64_t found = find_valid_sets(k, s, valid);
     // check the expected number of valid patterns were found
@@ -256,43 +256,95 @@ bool test_find_valid_sets() {
     return true;
 }
 
+bool test_find_valid_sets_realloc() {
+    // test that find_valid_sets() returns the correct number of valid sets for a given key,
+    // and that it reallocates plenty memory
+    key k[9] = { 1, 1, 1, 2, 1, 1, 0, 0, 0 };
+    set s[25] = {};
+    // pointer that will have valid patterns allocated to it
+    uint32_t * valid = (uint32_t *)calloc(1, sizeof(uint32_t));
+    // call find_valid_sets and store count of number found
+    uint64_t found = find_valid_sets(k, s, valid);
+    // check the expected number of valid patterns were found
+    if(found != 27132) {
+        return false;
+    }
+    // DONT FORGET TO FREE DYNAMIC MEMORY!
+    free(valid);
+    return true;
+}
+
 int main(int argc, char const *argv[]) {
     int result = 0;
+    printf("test_set_valid:\n");
     if(!test_set_valid()) {
-        printf("FAIL: test_set_valid\n");
+        printf("FAIL\n");
         result = 1;
+    } else {
+        printf("PASS\n");
     }
+    printf("test_build_set:\n");
     if(!test_build_set()) {
-        printf("FAIL: test_build_set\n");
+        printf("FAIL\n");
         result = 1;
+    } else {
+        printf("PASS\n");
     }
+    printf("test_build_set_is_valid:\n");
     if(!test_build_set_is_valid()) {
-        printf("FAIL: test_build_set_is_valid\n");
+        printf("FAIL\n");
         result = 1;
+    } else {
+        printf("PASS\n");
     }
+    printf("test_next_set:\n");
     if(!test_next_set()) {
-        printf("FAIL: test_next_set\n");
+        printf("FAIL\n");
         result = 1;
+    } else {
+        printf("PASS\n");
     }
+    printf("test_row_to_set:\n");
     if(!test_row_to_set()) {
-        printf("FAIL: test_row_to_set\n");
+        printf("FAIL\n");
         result = 1;
+    } else {
+        printf("PASS\n");
     }
+    printf("test_set_to_row:\n");
     if(!test_set_to_row()) {
-        printf("FAIL: test_set_to_row\n");
+        printf("FAIL\n");
         result = 1;
+    } else {
+        printf("PASS\n");
     }
+    printf("test_col_to_set:\n");
     if(!test_col_to_set()) {
-        printf("FAIL: test_col_to_set\n");
+        printf("FAIL\n");
         result = 1;
+    } else {
+        printf("PASS\n");
     }
+    printf("test_set_to_col:\n");
     if(!test_set_to_col()) {
-        printf("FAIL: test_set_to_col\n");
+        printf("FAIL\n");
         result = 1;
+    } else {
+        printf("PASS\n");
     }
+    printf("test_find_valid_sets:\n");
     if(!test_find_valid_sets()) {
-        printf("FAIL: test_find_valid_sets\n");
+        printf("FAIL\n");
         result = 1;
+    } else {
+        printf("PASS\n");
+    }
+    printf("test_find_valid_sets_realloc:\n");
+    if(!test_find_valid_sets_realloc()) {
+        printf("FAIL\n");
+        result = 1;
+    } else {
+        printf("PASS\n");
     }
     return result;
 }

@@ -170,9 +170,9 @@ int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
     // initialise valid pattern counter
     uint64_t found = 0;
     // initialise our dynamic array counter - this keeps track of how much we have allocated
-    int64_t allocated = 32;
+    int64_t allocated = 1024;
     // allocate memory - store 32-bit uints (this is how we store valid results)
-    valid = (uint32_t *)realloc(valid, allocated * sizeof(uint32_t));
+    valid = realloc(valid, allocated * sizeof(uint32_t));
     // if realloc failed, return -1
     if(valid == NULL) {
         fprintf(stderr, "Failed to allocate memory.\n");
@@ -191,10 +191,10 @@ int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
             found++;
             // re-allocate dynamic memory if we need to
             if(found > allocated) {
-                // set next allocation size to current size + 32
-                allocated += 32;
+                // set next allocation size to current size + 1024
+                allocated += 1024;
                 // try and re-allocate memory
-                valid = (uint32_t *)realloc(valid, allocated * sizeof(uint32_t));
+                valid = realloc(valid, allocated * sizeof(uint32_t));
                 // if realloc failed, return -1
                 if(valid == NULL) {
                     fprintf(stderr, "Failed to re-allocate memory.\n");
@@ -206,7 +206,7 @@ int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
         }
     }
     // finally, resize dynamic array to exactly the number of found items
-    valid = (uint32_t *)realloc(valid, found * sizeof(uint32_t));
+    valid = realloc(valid, found * sizeof(uint32_t));
     // if realloc failed, return -1
     if(valid == NULL) {
         fprintf(stderr, "Failed to re-allocate memory.\n");
