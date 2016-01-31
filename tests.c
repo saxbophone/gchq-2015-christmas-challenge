@@ -7,12 +7,16 @@
 
 
 bool test_set_valid() {
-    key tk[9] = { 1, 7, 3, 1, 1, 2, 0, 0, 0 };
-    set ts[25] = { 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0 };
-    bool should_be_true = set_valid(tk, ts);
-    key fk[9] = { 1, 7, 3, 1, 1, 2, 0, 0, 0 };
-    set fs[25] = { 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0 };
-    bool should_be_false = set_valid(fk, fs);
+    key_set t = {
+        .k = { 1, 7, 3, 1, 1, 2, 0, 0, 0 },
+        .s = { 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0 },
+    };
+    bool should_be_true = set_valid(t);
+    key_set f = {
+        .k = { 1, 7, 3, 1, 1, 2, 0, 0, 0 },
+        .s = { 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0 },
+    };
+    bool should_be_false = set_valid(f);
     return (should_be_true && !should_be_false);
 }
 

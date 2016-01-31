@@ -50,13 +50,13 @@ void build_key(uint8_t array[], uint8_t len, uint8_t result[], uint8_t result_le
 }
 
 // given a key array and a set, check if the set is valid according to the key array
-bool set_valid(key k[9], set s[25]) {
+bool set_valid(key_set check) {
     // first get the number of non-zero items in the key
-    uint8_t key_len = count_non_zero(k, 9);
+    uint8_t key_len = count_non_zero(check.k, 9);
     // get the total of the items in the key
-    uint8_t key_sum = sum_array(k, 9);
+    uint8_t key_sum = sum_array(check.k, 9);
     // do the same for the set
-    uint8_t set_sum = sum_array(s, 25);
+    uint8_t set_sum = sum_array(check.s, 25);
     // if the sums aren't equal then we know already it's not valid
     if(key_sum != set_sum) {
         return false;
@@ -64,10 +64,10 @@ bool set_valid(key k[9], set s[25]) {
         // if they were equal, it's possibly valid, but we need to do more checks
         // construct the key for this set
         uint8_t rebuilt_key[9] = {};
-        build_key(s, 25, rebuilt_key, 9);
+        build_key(check.s, 25, rebuilt_key, 9);
         // compare it with the target key
         for(uint8_t i = 0; i < 9; i++) {
-            if(k[i] != rebuilt_key[i]) {
+            if(check.k[i] != rebuilt_key[i]) {
                 // if any are not equal, return false
                 return false;
             }

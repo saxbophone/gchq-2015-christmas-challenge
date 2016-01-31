@@ -4,13 +4,19 @@
 
 // a key is a number specifying a consecutive number of black squares in a row/col
 typedef uint8_t key;
-// a square is one shaded or unshaded box in the grid, inside a row or column
-typedef uint8_t square;
 // a set is a row/col unpacked into a 25-item array for ease of use
 typedef uint8_t set;
 
+// convenience struct for passing / returning pairs of corresponding keys and sets
+typedef struct {
+    set s[25];
+    key k[9];
+} key_set;
+
 // used where a set is stored as a 32-bit uint
 typedef uint32_t packed_set;
+// a square is one shaded or unshaded box in the grid, inside a row or column
+typedef uint8_t square;
 
 // main struct to represent state of the grid of evil
 typedef struct {
@@ -33,14 +39,8 @@ typedef struct {
     set_combos cols[25]; // 25 cols
 } grid_combos;
 
-// convenience struct for passing / returning pairs of corresponding keys and sets
-typedef struct {
-    set s[25];
-    key k[9];
-} key_set;
-
 // given a key array and a set, check if the set is valid according to the key array
-bool set_valid(key k[9], set s[25]);
+bool set_valid(key_set check);
 
 // builds the first valid possibility for a set's key
 void build_set(key k[9], set s[25]);
