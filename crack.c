@@ -77,18 +77,18 @@ bool set_valid(key k[9], set s[25]) {
     return true;
 }
 
-// builds the first valid possibility for a set's key
-void build_set(key k[9], set s[25]) {
-    uint8_t m = 0;
-    for(uint8_t i = 0; i < 9; i++) {
-        for(uint8_t j = 0; j < k[i]; j++) {
-            s[m] = 1;
-            m++;
-        }
-        s[m] = 0;
-        m++;
-    }
-}
+// // builds the first valid possibility for a set's key
+// void build_set(key k[9], set s[25]) {
+//     uint8_t m = 0;
+//     for(uint8_t i = 0; i < 9; i++) {
+//         for(uint8_t j = 0; j < k[i]; j++) {
+//             s[m] = 1;
+//             m++;
+//         }
+//         s[m] = 0;
+//         m++;
+//     }
+// }
 
 // converts a 25-item set to a 25-bit int (32-bit really)
 packed_set set_to_int(set in[25]) {
