@@ -181,7 +181,7 @@ int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
     if(set_valid(k, s)) {
         // if this first set was valid, then increment counter and store 32-bit int in valid array
         found++;
-        valid[found] = set_to_int(s);
+        valid[found-1] = set_to_int(s);
     }
     // now iterate the set and store any newly found patterns, re-allocating as needed
     for(uint64_t i = 0; i < 33554432; i++) {
@@ -202,7 +202,7 @@ int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
                 }
             }
             // store latest valid result as a 32-bit int
-            valid[found] = latest;
+            valid[found-1] = latest;
         }
     }
     // finally, resize dynamic array to exactly the number of found items
