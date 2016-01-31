@@ -91,8 +91,8 @@ void build_set(key k[9], set s[25]) {
 }
 
 // converts a 25-item set to a 25-bit int (32-bit really)
-uint32_t set_to_int(set in[25]) {
-    uint32_t out = 0;
+packed_set set_to_int(set in[25]) {
+    packed_set out = 0;
     for(uint8_t i = 0; i < 25; i++) {
         out |= (in[i] << i);
     }
@@ -100,7 +100,7 @@ uint32_t set_to_int(set in[25]) {
 }
 
 // converts a 25-bit int (32-bit really) to a 25-item set
-void int_to_set(uint32_t in, set out[25]) {
+void int_to_set(packed_set in, set out[25]) {
     for(uint8_t i = 0; i < 25; i++) {
         out[i] = ((in & (1 << i)) >> i);
     }
@@ -109,13 +109,13 @@ void int_to_set(uint32_t in, set out[25]) {
 // builds the next set after a given set
 // (currently k is not used, and the resulting set may not be valid according to set_valid())
 // returns the next set as a 25-bit (32-bit really) int (also stores in param n)
-uint32_t next_set(key k[9], set c[25], set n[25]) {
+packed_set next_set(key k[9], set c[25], set n[25]) {
     // NOTE: The current implementation is lazy:
     // Treat the array as a 25-bit number and increment it
     // This should be changed at some point for efficiency
 
     // 32-bit int to store our *25-bit* int
-    uint32_t number = set_to_int(c);
+    packed_set number = set_to_int(c);
     // increment number by 1
     number++;
     // convert back to set
@@ -166,13 +166,13 @@ void set_to_col(grid * g, uint8_t col_index, set s[25]) {
 // finds all the valid combinations for a given set, stores these in the given array
 // (reallocates if needed) and returns the number of valid combinations
 // PLEASE REMEMBER TO free() MEMORY ALLOCATED BY THIS FUNCTION!
-int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
+int64_t find_valid_sets(key k[9], set s[25], packed_set * valid) {
     // initialise valid pattern counter
     uint64_t found = 0;
     // initialise our dynamic array counter - this keeps track of how much we have allocated
     int64_t allocated = 1024;
     // allocate memory - store 32-bit uints (this is how we store valid results)
-    valid = realloc(valid, allocated * sizeof(uint32_t));
+    valid = realloc(valid, allocated * sizeof(packed_set));
     // if realloc failed, return -1
     if(valid == NULL) {
         fprintf(stderr, "Failed to allocate memory.\n");
@@ -185,7 +185,7 @@ int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
     }
     // now iterate the set and store any newly found patterns, re-allocating as needed
     for(uint64_t i = 0; i < 33554432; i++) {
-        uint32_t latest = next_set(k, s, s);
+        packed_set latest = next_set(k, s, s);
         if(set_valid(k, s)) {
             // increment found counter
             found++;
@@ -194,7 +194,7 @@ int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
                 // set next allocation size to current size + 1024
                 allocated += 1024;
                 // try and re-allocate memory
-                valid = realloc(valid, allocated * sizeof(uint32_t));
+                valid = realloc(valid, allocated * sizeof(packed_set));
                 // if realloc failed, return -1
                 if(valid == NULL) {
                     fprintf(stderr, "Failed to re-allocate memory.\n");
@@ -206,7 +206,7 @@ int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
         }
     }
     // finally, resize dynamic array to exactly the number of found items
-    valid = realloc(valid, found * sizeof(uint32_t));
+    valid = realloc(valid, found * sizeof(packed_set));
     // if realloc failed, return -1
     if(valid == NULL) {
         fprintf(stderr, "Failed to re-allocate memory.\n");
