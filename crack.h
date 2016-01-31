@@ -25,7 +25,13 @@ typedef struct {
 typedef struct {
     packed_set * sets; // pointer to a dynamically allocated array of packed_sets
     uint64_t count; // count of items in above array
-} set_results;
+} set_combos;
+
+// struct to store possible sets for all rows and columns of a grid, indexed by row/col index
+typedef struct {
+    set_combos rows[25]; // 25 rows
+    set_combos cols[25]; // 25 cols
+} grid_combos;
 
 // given a key array and a set, check if the set is valid according to the key array
 bool set_valid(key k[9], set s[25]);
@@ -51,6 +57,9 @@ void col_to_set(grid g, uint8_t col_index, set s[25], key k[9]);
 void set_to_col(grid * g, uint8_t col_index, set s[25]);
 
 // finds all the valid combinations for a given set and stores these and their
-// count in a set_results struct (reallocates the struct as needed)
+// count in a set_combos struct (reallocates the struct as needed)
 // PLEASE REMEMBER TO free() MEMORY ALLOCATED BY THIS FUNCTION!
-set_results find_valid_sets(key k[9], set s[25]);
+set_combos find_valid_sets(key k[9], set s[25]);
+
+// finds all the valid combinations for all the rows and columns in a given grid
+grid_combos find_valid_combos(grid g);

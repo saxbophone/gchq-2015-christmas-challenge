@@ -164,12 +164,12 @@ void set_to_col(grid * g, uint8_t col_index, set s[25]) {
 }
 
 // finds all the valid combinations for a given set and stores these and their
-// count in a set_results struct (reallocates the struct as needed)
+// count in a set_combos struct (reallocates the struct as needed)
 // PLEASE REMEMBER TO free() MEMORY ALLOCATED BY THIS FUNCTION!
-set_results find_valid_sets(key k[9], set s[25]) {
+set_combos find_valid_sets(key k[9], set s[25]) {
     // initialise our dynamic array counter - this keeps track of how much we have allocated
     int64_t allocated = 1024;
-    set_results results = {
+    set_combos results = {
         .sets = malloc(allocated * sizeof(packed_set)), // allocate memory
         .count = 0, // initialise valid pattern counter
     };

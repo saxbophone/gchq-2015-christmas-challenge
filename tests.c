@@ -237,8 +237,8 @@ bool test_find_valid_sets() {
         33331071, 33335167, 33336959, 33337086, 33363839, 33367935, 33369727,
         33369854, 33376127, 33377919, 33378046, 33381503, 33381630, 33381884,
     };
-    // call find_valid_sets and store results in a set_results struct
-    set_results results = find_valid_sets(k, s);
+    // call find_valid_sets and store results in a set_combos struct
+    set_combos results = find_valid_sets(k, s);
     // check the expected number of valid patterns were found
     if(results.count != 21) {
         return false;
@@ -259,8 +259,8 @@ bool test_find_valid_sets_realloc() {
     // and that it reallocates plenty memory (this known set generates in excess of 20k results)
     key k[9] = { 1, 1, 1, 2, 1, 1, 0, 0, 0 };
     set s[25] = {};
-    // call find_valid_sets and store results in a set_results struct
-    set_results results = find_valid_sets(k, s);
+    // call find_valid_sets and store results in a set_combos struct
+    set_combos results = find_valid_sets(k, s);
     // check the expected number of valid patterns were found
     if(results.count != 27132) {
         return false;
