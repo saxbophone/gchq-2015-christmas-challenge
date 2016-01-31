@@ -17,10 +17,8 @@ int main(int argc, char const *argv[]) {
     for(uint8_t i = 0; i < 25; i++) {
         printf("| %02d     | ", i+1);
         fflush(stdout);
-        key k[9] = {};
-        set s[25] = {};
-        row_to_set(PUZZLE, i, s, k);
-        set_results results = find_valid_sets(k, s);
+        key_set r = row_to_set(PUZZLE, i);
+        set_combos results = find_valid_sets(r.k, r.s);
         printf("%06lu                 |\n", results.count);
         free(results.sets);
     }
@@ -33,10 +31,8 @@ int main(int argc, char const *argv[]) {
     for(uint8_t i = 0; i < 25; i++) {
         printf("| %02d     | ", i+1);
         fflush(stdout);
-        key k[9] = {};
-        set s[25] = {};
-        col_to_set(PUZZLE, i, s, k);
-        set_results results = find_valid_sets(k, s);
+        key_set c = col_to_set(PUZZLE, i);
+        set_combos results = find_valid_sets(c.k, c.s);
         printf("%06lu                 |\n", results.count);
         free(results.sets);
     }
