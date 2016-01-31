@@ -33,6 +33,12 @@ typedef struct {
     set_combos cols[25]; // 25 cols
 } grid_combos;
 
+// convenience struct for passing / returning pairs of corresponding keys and sets
+typedef struct {
+    set s[25];
+    key k[9];
+} key_set;
+
 // given a key array and a set, check if the set is valid according to the key array
 bool set_valid(key k[9], set s[25]);
 
