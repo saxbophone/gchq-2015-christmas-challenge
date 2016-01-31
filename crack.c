@@ -173,7 +173,7 @@ int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
     int64_t allocated = 32;
     // allocate memory - store 32-bit uints (this is how we store valid results)
     valid = (uint32_t *)realloc(valid, allocated * sizeof(uint32_t));
-    // if calloc failed, return -1
+    // if realloc failed, return -1
     if(valid == NULL) {
         fprintf(stderr, "Failed to allocate memory.\n");
         return -1;
@@ -206,7 +206,7 @@ int64_t find_valid_sets(key k[9], set s[25], uint32_t * valid) {
         }
     }
     // finally, resize dynamic array to exactly the number of found items
-    valid = (uint32_t *)realloc(valid, allocated * sizeof(uint32_t));
+    valid = (uint32_t *)realloc(valid, found * sizeof(uint32_t));
     // if realloc failed, return -1
     if(valid == NULL) {
         fprintf(stderr, "Failed to re-allocate memory.\n");
