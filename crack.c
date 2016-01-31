@@ -180,17 +180,15 @@ set_results find_valid_sets(key k[9], set s[25]) {
     }
     if(set_valid(k, s)) {
         // if this first set was valid, then increment counter and store 32-bit int in valid array
+        results.sets[results.count] = set_to_int(s);
         results.count++;
-        results.sets[results.count-1] = set_to_int(s);
     }
     // now iterate the set and store any newly found patterns, re-allocating as needed
     for(uint64_t i = 0; i < 33554432; i++) {
         packed_set latest = next_set(k, s, s);
         if(set_valid(k, s)) {
-            // increment found counter
-            results.count++;
             // re-allocate dynamic memory if we need to
-            if(results.count > allocated) {
+            if(results.count == allocated) {
                 // set next allocation size to current size + 1024
                 allocated += 1024;
                 // try and re-allocate memory
@@ -202,7 +200,9 @@ set_results find_valid_sets(key k[9], set s[25]) {
                 }
             }
             // store latest valid result as a 32-bit int
-            results.sets[results.count-1] = latest;
+            results.sets[results.count] = latest;
+            // increment found counter
+            results.count++;
         }
     }
     // finally, resize dynamic array to exactly the number of found items
