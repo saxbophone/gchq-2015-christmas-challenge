@@ -34,6 +34,20 @@ typedef struct {
     uint64_t count; // count of items in above array
 } set_combos;
 
+// struct to store one pair of pointers to packed_sets - one row and one column
+typedef struct {
+    packed_set * row; // points to one row packed_set
+    packed_set * col; // points to one col packed_set
+} set_pair;
+
+// struct to store set_pairs of matching sets for each square in the grid
+typedef struct {
+    // for each square in the 25x25 grid, organised by sets that set that square
+    // to 0 and others that set it to 1, a pointer to a dynamically allocated
+    // array of set_pairs
+    packed_set * pairs[25][25][2];
+} square_pairs;
+
 // struct to store possible sets for all rows and columns of a grid, indexed by row/col index
 typedef struct {
     set_combos rows[25]; // 25 rows
@@ -77,3 +91,4 @@ grid_combos find_valid_combos(grid g);
 
 // frees dynamically allocated memory contained within the rows and cols of a given grid_combos struct
 void free_grid_combos(grid_combos g);
+
