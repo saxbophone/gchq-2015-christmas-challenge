@@ -203,7 +203,6 @@ bool test_set_to_col() {
 bool test_find_valid_sets() {
     // test that find_valid_sets() returns the correct number of valid sets for a given key
     key k = { { 7, 3, 1, 1, 7, 0, 0, 0, 0 } };
-    set s = {};
     // expected patterns that will be found
     uint32_t expected[21] = {
         8345471,  16668543, 16684927, 16689023, 16690815, 16690942, 33314687,
@@ -211,7 +210,7 @@ bool test_find_valid_sets() {
         33369854, 33376127, 33377919, 33378046, 33381503, 33381630, 33381884,
     };
     // call find_valid_sets and store results in a set_combos struct
-    set_combos results = find_valid_sets(k, s);
+    set_combos results = find_valid_sets(k);
     // check the expected number of valid patterns were found
     if(results.count != 21) {
         return false;
@@ -231,9 +230,8 @@ bool test_find_valid_sets_realloc() {
     // test that find_valid_sets() returns the correct number of valid sets for a given key,
     // and that it reallocates plenty memory (this known set generates in excess of 20k results)
     key k = { { 1, 1, 1, 2, 1, 1, 0, 0, 0 } };
-    set s = {};
     // call find_valid_sets and store results in a set_combos struct
-    set_combos results = find_valid_sets(k, s);
+    set_combos results = find_valid_sets(k);
     // check the expected number of valid patterns were found
     if(results.count != 27132) {
         return false;

@@ -67,10 +67,10 @@ void set_to_row(grid * g, uint8_t row_index, set s);
 // converts a set to a given col in the grid
 void set_to_col(grid * g, uint8_t col_index, set s);
 
-// finds all the valid combinations for a given set and stores these and their
+// finds all the valid combinations for a given key and stores these and their
 // count in a set_combos struct (reallocates the struct as needed)
 // PLEASE REMEMBER TO free() MEMORY ALLOCATED BY THIS FUNCTION!
-set_combos find_valid_sets(key k, set s);
+set_combos find_valid_sets(key k);
 
 // finds all the valid combinations for all the rows and columns in a given grid
 grid_combos find_valid_combos(grid g);
