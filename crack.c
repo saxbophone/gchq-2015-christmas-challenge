@@ -57,7 +57,7 @@ bool set_valid(key k, set s) {
     // first get the number of non-zero items in the key
     uint8_t key_len = count_non_zero(k.items, 9);
     // get the total of the items in the key
-    uint8_t key_sum = sum_array(k.items, 9);
+    uint8_t key_sum = sum_array(k.items, key_len);
     // do the same for the set
     uint8_t set_sum = sum_array(s.items, 25);
     // if the sums aren't equal then we know already it's not valid
@@ -68,7 +68,7 @@ bool set_valid(key k, set s) {
         // construct the key for this set
         key rebuilt_key = build_key(s);
         // compare it with the target key
-        for(uint8_t i = 0; i < 9; i++) {
+        for(uint8_t i = 0; i < key_len; i++) {
             if(k.items[i] != rebuilt_key.items[i]) {
                 // if any are not equal, return false
                 return false;
