@@ -42,7 +42,8 @@ typedef struct {
 
 // struct to store a dynamically allocated array of set_pair structs, and the count of them
 typedef struct {
-    set_pair * pairs;
+    set_pair * pairs; // a dynamic array of set pairs
+    uint64_t count; // the number of items in the above array
 } set_pair_list;
 
 // struct to store set_pairs of matching sets for each square in the grid

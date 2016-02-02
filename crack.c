@@ -249,6 +249,89 @@ void free_grid_combos(grid_combos g) {
 square_pairs find_square_combos(grid_combos g) {
     // create results struct
     square_pairs results = {};
+    // iterate over all squares in the grid, and for each one build dynamic arrays
+    // of all the pairs of rows and columns that set that square to the same value
+    for(uint8_t x = 0; x < 25; x++) {
+        for(uint8_t y = 0; y < 25; y++) {
+            // an array of allocated mem counters
+            uint64_t allocated[2] = { 1024, 1024 };
+            // allocate an initial amount of storage to the dynamic array for this square
+            // do this for both 0 and 1
+            for(uint8_t z = 0; z < 2; z++) {
+                results.squares[x][y][z].count = 0;
+                results.squares[x][y][z].pairs = malloc(allocated[z] * sizeof(set_pair));
+                // check for malloc failure
+                if(results.squares[x][y][z].pairs == NULL) {
+                    fprintf(stderr, "Failed to allocate memory.\n");
+                    abort();
+                }
+            }
+            // matrix-iterate over the combos for this squares row and its column
+            for(uint64_t r = 0; r < g.rows[y].count; r++) {
+                for(uint64_t c = 0; c < g.cols[x].count; c++) {
+                    // for each pair of sets, convert to unpacked sets and check
+                    // if they hold the same value for this square
+                    set row_set = int_to_set(g.rows[y].sets[r]);
+                    set col_set = int_to_set(g.cols[x].sets[c]);
+                    // compare
+                    if(row_set.items[x] == col_set.items[y]) {
+                        // store whether it was a one or a zero that matched
+                        uint8_t z = row_set.items[x] & col_set.items[y];
+                        // check if we need to realloc
+                        if(results.squares[x][y][z].count == allocated[z]) {
+                            // set next allocation size to current size + 1024
+                            allocated[z] += 1024;
+                            // realloc more memory
+                            results.squares[x][y][z].pairs = realloc(
+                                results.squares[x][y][z].pairs, allocated[z] * sizeof(set_pair)
+                            );
+                            // check for realloc failure
+                            if(results.squares[x][y][z].pairs == NULL) {
+                                fprintf(stderr, "Failed to re-allocate memory.\n");
+                                abort();
+                            }
+                        }
+                        // add this combo's addresses to results.pairs:
+                        // row
+                        results.squares[x][y][z].pairs[
+                            results.squares[x][y][z].count
+                        ].row = &g.rows[y].sets[r];
+                        // col
+                        results.squares[x][y][z].pairs[
+                            results.squares[x][y][z].count
+                        ].col = &g.cols[x].sets[c];
+                        // increment counter
+                        results.squares[x][y][z].count++;
+                    }
+                }
+            }
+            printf(
+                "Found %lu possible 0 combinations for (%u, %u) \n",
+                results.squares[x][y][0].count, x, y
+            );
+            printf(
+                "Found %lu possible 1 combinations for (%u, %u) \n",
+                results.squares[x][y][1].count, x, y
+            );
+            printf("=======================================================\n");
+            uint64_t total_size = (
+                (results.squares[x][y][0].count + results.squares[x][y][1].count) * sizeof(packed_set *)
+            );
+            printf("(%lu bytes of RAM!)\n", total_size);
+            // realloc to actual count of results
+            // so as to free up as much spare RAM as possible
+            for(uint8_t z = 0; z < 2; z++) {
+                results.squares[x][y][z].pairs = realloc(
+                    results.squares[x][y][z].pairs, results.squares[x][y][z].count * sizeof(set_pair)
+                );
+                // check for realloc failure
+                if(results.squares[x][y][z].pairs == NULL) {
+                    fprintf(stderr, "Failed to re-allocate memory.\n");
+                    abort();
+                }
+            }
+        }
+    }
     return results;
 }
 
