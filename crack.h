@@ -40,12 +40,16 @@ typedef struct {
     packed_set * col; // points to one col packed_set
 } set_pair;
 
+// struct to store a dynamically allocated array of set_pair structs, and the count of them
+typedef struct {
+    set_pair * pairs;
+} set_pair_list;
+
 // struct to store set_pairs of matching sets for each square in the grid
 typedef struct {
     // for each square in the 25x25 grid, organised by sets that set that square
-    // to 0 and others that set it to 1, a pointer to a dynamically allocated
-    // array of set_pairs
-    packed_set * pairs[25][25][2];
+    // to 0 and others that set it to 1, a set_pair_list struct
+    set_pair_list squares[25][25][2];
 } square_pairs;
 
 // struct to store possible sets for all rows and columns of a grid, indexed by row/col index
