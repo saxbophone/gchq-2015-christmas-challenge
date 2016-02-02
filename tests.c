@@ -247,6 +247,12 @@ bool test_free_grid_combos() {
     return true;
 }
 
+bool test_free_square_pairs() {
+    square_pairs sq = {};
+    free_square_pairs(sq);
+    return true;
+}
+
 int main(int argc, char const *argv[]) {
     int result = 0;
     printf("test_set_valid:\n");
@@ -307,6 +313,13 @@ int main(int argc, char const *argv[]) {
     }
     printf("test_free_grid_combos:\n");
     if(!test_free_grid_combos()) {
+        printf("FAIL\n");
+        result = 1;
+    } else {
+        printf("PASS\n");
+    }
+    printf("test_free_square_pairs:\n");
+    if(!test_free_square_pairs()) {
         printf("FAIL\n");
         result = 1;
     } else {

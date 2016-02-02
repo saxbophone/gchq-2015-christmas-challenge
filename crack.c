@@ -243,3 +243,26 @@ void free_grid_combos(grid_combos g) {
         }
     }
 }
+
+// returns a square_pairs struct storing pointers to all possible pairs of valid sets
+// for each square in the grid - takes a grid_combos struct as sole argument
+square_pairs find_square_combos(grid_combos g) {
+    // NOT YET IMPLEMENTED!
+    // TODO: Implement this function
+}
+
+// frees dynamically allocated memory contained within the pointer arrays of a
+// square_pairs struct
+void free_square_pairs(square_pairs s) {
+    // 3D array of pointers, hence the densely-nested for loop
+    for(uint8_t x = 0; x < 25; x++) {
+        for(uint8_t y = 0; y < 25; y++) {
+            for(uint8_t z = 0; z < 2; z++) {
+                if(s.pairs[x][y][z] != NULL) {
+                    free(s.pairs[x][y][z]);
+                    s.pairs[x][y][z] = NULL;
+                }
+            }
+        }
+    }
+}
