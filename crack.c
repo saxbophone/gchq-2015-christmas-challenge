@@ -276,7 +276,10 @@ grid guess_grid(grid_combos g) {
             } else if(score[1] > score[0]) {
                 result.squares[x][y] = 1;
                 printf("\u2588"); // print solid block character
+            } else {
+                printf("?");
             }
+            fflush(stdout);
             // printf("Guessed %u\n", result.squares[x][y]);
         }
         printf("\n");
