@@ -244,28 +244,18 @@ void free_grid_combos(grid_combos g) {
     }
 }
 
-// returns a square_pairs struct storing pointers to all possible pairs of valid sets
-// for each square in the grid - takes a grid_combos struct as sole argument
-square_pairs find_square_combos(grid_combos g) {
-    // create results struct
-    square_pairs results = {};
-    // iterate over all squares in the grid, and for each one build dynamic arrays
-    // of all the pairs of rows and columns that set that square to the same value
-    for(uint8_t x = 0; x < 25; x++) {
-        for(uint8_t y = 0; y < 25; y++) {
-            // an array of allocated mem counters
-            uint64_t allocated[2] = { 1024, 1024 };
-            // allocate an initial amount of storage to the dynamic array for this square
-            // do this for both 0 and 1
-            for(uint8_t z = 0; z < 2; z++) {
-                results.squares[x][y][z].count = 0;
-                results.squares[x][y][z].pairs = malloc(allocated[z] * sizeof(set_pair));
-                // check for malloc failure
-                if(results.squares[x][y][z].pairs == NULL) {
-                    fprintf(stderr, "Failed to allocate memory.\n");
-                    abort();
-                }
-            }
+// returns a grid struct which is the predicted solution to the puzzle, based
+// on the number of combinations between different row/column combinations for 0
+// and 1 - takes a grid_combos struct as sole argument
+grid guess_grid(grid_combos g) {
+    // create result grid
+    grid result = {};
+    // iterate over all squares in the grid, and for each one count the number
+    // of successful combinations that set that square to 0 and 1 respectively
+    for(uint8_t y = 0; y < 25; y++) {
+        for(uint8_t x = 0; x < 25; x++) {
+            // printf("Guessing square at (%u, %u)\n", x, y);
+            uint64_t score[2] = { 0, 0 }; // two score counters, one for 0 and one for 1
             // matrix-iterate over the combos for this squares row and its column
             for(uint64_t r = 0; r < g.rows[y].count; r++) {
                 for(uint64_t c = 0; c < g.cols[x].count; c++) {
@@ -275,64 +265,23 @@ square_pairs find_square_combos(grid_combos g) {
                     set col_set = int_to_set(g.cols[x].sets[c]);
                     // compare
                     if(row_set.items[x] == col_set.items[y]) {
-                        // store whether it was a one or a zero that matched
-                        uint8_t z = row_set.items[x] & col_set.items[y];
-                        // check if we need to realloc
-                        if(results.squares[x][y][z].count == allocated[z]) {
-                            // set next allocation size to current size + 1024
-                            allocated[z] += 1024;
-                            // realloc more memory
-                            results.squares[x][y][z].pairs = realloc(
-                                results.squares[x][y][z].pairs, allocated[z] * sizeof(set_pair)
-                            );
-                            // check for realloc failure
-                            if(results.squares[x][y][z].pairs == NULL) {
-                                fprintf(stderr, "Failed to re-allocate memory.\n");
-                                abort();
-                            }
-                        }
-                        // add this combo's addresses to results.pairs:
-                        // row
-                        results.squares[x][y][z].pairs[
-                            results.squares[x][y][z].count
-                        ].row = &g.rows[y].sets[r];
-                        // col
-                        results.squares[x][y][z].pairs[
-                            results.squares[x][y][z].count
-                        ].col = &g.cols[x].sets[c];
-                        // increment counter
-                        results.squares[x][y][z].count++;
+                        // increment counter for the square value that matched
+                        score[row_set.items[x]]++;
                     }
                 }
             }
-            printf(
-                "Found %lu possible 0 combinations for (%u, %u) \n",
-                results.squares[x][y][0].count, x, y
-            );
-            printf(
-                "Found %lu possible 1 combinations for (%u, %u) \n",
-                results.squares[x][y][1].count, x, y
-            );
-            printf("=======================================================\n");
-            uint64_t total_size = (
-                (results.squares[x][y][0].count + results.squares[x][y][1].count) * sizeof(packed_set *)
-            );
-            printf("(%lu bytes of RAM!)\n", total_size);
-            // realloc to actual count of results
-            // so as to free up as much spare RAM as possible
-            for(uint8_t z = 0; z < 2; z++) {
-                results.squares[x][y][z].pairs = realloc(
-                    results.squares[x][y][z].pairs, results.squares[x][y][z].count * sizeof(set_pair)
-                );
-                // check for realloc failure
-                if(results.squares[x][y][z].pairs == NULL) {
-                    fprintf(stderr, "Failed to re-allocate memory.\n");
-                    abort();
-                }
+            if(score[0] > score[1]) {
+                result.squares[x][y] = 0;
+                printf(" "); // blank space
+            } else if(score[1] > score[0]) {
+                result.squares[x][y] = 1;
+                printf("\u2588"); // print solid block character
             }
+            // printf("Guessed %u\n", result.squares[x][y]);
         }
+        printf("\n");
     }
-    return results;
+    return result;
 }
 
 // frees dynamically allocated memory contained within the pointer arrays of a
@@ -348,5 +297,19 @@ void free_square_pairs(square_pairs s) {
                 }
             }
         }
+    }
+}
+
+// displays grid as character drawing in console
+void display_grid(grid g) {
+    for(uint8_t y = 0; y < 25; y++) {
+        for(uint8_t x = 0; x < 25; x++) {
+            if(g.squares[x][y]) {
+                printf("\u2588"); // print solid block character
+            } else {
+                printf(" "); // print blank space
+            }
+        }
+        printf("\n");
     }
 }

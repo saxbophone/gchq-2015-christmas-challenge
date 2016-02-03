@@ -97,10 +97,14 @@ grid_combos find_valid_combos(grid g);
 // frees dynamically allocated memory contained within the rows and cols of a given grid_combos struct
 void free_grid_combos(grid_combos g);
 
-// returns a square_pairs struct storing pointers to all possible pairs of valid sets
-// for each square in the grid - takes a grid_combos struct as sole argument
-square_pairs find_square_combos(grid_combos g);
+// returns a grid struct which is the predicted solution to the puzzle, based
+// on the number of combinations between different row/column combinations for 0
+// and 1 - takes a grid_combos struct as sole argument
+grid guess_grid(grid_combos g);
 
 // frees dynamically allocated memory contained within the pointer arrays of a
 // square_pairs struct
 void free_square_pairs(square_pairs s);
+
+// displays grid as character drawing in console
+void display_grid(grid g);

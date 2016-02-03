@@ -12,12 +12,15 @@ int main(int argc, char const *argv[]) {
     // find all combinations of all rows and columns:
     printf("Finding valid combinations for rows and columns (7 minutes approx.)\n");
     grid_combos first_round_results = find_valid_combos(PUZZLE);
-    printf("Pairing up valid combos between rows and columns for each square in grid.\n");
-    square_pairs second_round_results = find_square_combos(first_round_results);
+    // printf("Pairing up valid combos between rows and columns for each square in grid.\n");
+    // square_pairs second_round_results = find_square_combos(first_round_results);
+    printf("Guessing Grid\n");
+    grid second_round_results = guess_grid(first_round_results);
     printf("DONE. Freeing up resources.\n");
     // DON'T FORGET TO FREE THE ALLOCATED MEMORY!
-    free_square_pairs(second_round_results);
+    // free_square_pairs(second_round_results);
     free_grid_combos(first_round_results);
+    display_grid(second_round_results);
     printf("FINISHED.\n");
     return 0;
 }
