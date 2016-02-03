@@ -254,7 +254,7 @@ square_pairs find_square_combos(grid_combos g) {
     for(uint8_t x = 0; x < 25; x++) {
         for(uint8_t y = 0; y < 25; y++) {
             // an array of allocated mem counters
-            uint64_t allocated[2] = { 1024, 1024 };
+            uint64_t allocated[2] = { 16, 16 };
             // allocate an initial amount of storage to the dynamic array for this square
             // do this for both 0 and 1
             for(uint8_t z = 0; z < 2; z++) {
@@ -266,6 +266,7 @@ square_pairs find_square_combos(grid_combos g) {
                     abort();
                 }
             }
+            printf("Searching combinations for (%u, %u)\n", x, y);
             // matrix-iterate over the combos for this squares row and its column
             for(uint64_t r = 0; r < g.rows[y].count; r++) {
                 for(uint64_t c = 0; c < g.cols[x].count; c++) {
@@ -279,8 +280,8 @@ square_pairs find_square_combos(grid_combos g) {
                         uint8_t z = row_set.items[x] & col_set.items[y];
                         // check if we need to realloc
                         if(results.squares[x][y][z].count == allocated[z]) {
-                            // set next allocation size to current size + 1024
-                            allocated[z] += 1024;
+                            // set next allocation size to current size + 16
+                            allocated[z] += 16;
                             // realloc more memory
                             results.squares[x][y][z].pairs = realloc(
                                 results.squares[x][y][z].pairs, allocated[z] * sizeof(set_pair)
@@ -305,31 +306,25 @@ square_pairs find_square_combos(grid_combos g) {
                     }
                 }
             }
-            printf(
-                "Found %lu possible 0 combinations for (%u, %u) \n",
-                results.squares[x][y][0].count, x, y
-            );
-            printf(
-                "Found %lu possible 1 combinations for (%u, %u) \n",
-                results.squares[x][y][1].count, x, y
-            );
-            printf("=======================================================\n");
+            printf("Found %lu possible combinations for 0\n", results.squares[x][y][0].count);
+            printf("Found %lu possible combinations for 1\n", results.squares[x][y][1].count);
             uint64_t total_size = (
                 (results.squares[x][y][0].count + results.squares[x][y][1].count) * sizeof(packed_set *)
             );
             printf("(%lu bytes of RAM!)\n", total_size);
+            printf("=======================================================\n");
             // realloc to actual count of results
             // so as to free up as much spare RAM as possible
-            for(uint8_t z = 0; z < 2; z++) {
-                results.squares[x][y][z].pairs = realloc(
-                    results.squares[x][y][z].pairs, results.squares[x][y][z].count * sizeof(set_pair)
-                );
-                // check for realloc failure
-                if(results.squares[x][y][z].pairs == NULL) {
-                    fprintf(stderr, "Failed to re-allocate memory.\n");
-                    abort();
-                }
-            }
+            // for(uint8_t z = 0; z < 2; z++) {
+            //     results.squares[x][y][z].pairs = realloc(
+            //         results.squares[x][y][z].pairs, results.squares[x][y][z].count * sizeof(set_pair)
+            //     );
+            //     // check for realloc failure
+            //     if(results.squares[x][y][z].pairs == NULL) {
+            //         fprintf(stderr, "Failed to re-allocate memory.\n");
+            //         abort();
+            //     }
+            // }
         }
     }
     return results;
